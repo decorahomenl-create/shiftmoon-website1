@@ -7,3 +7,4 @@
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}}
 .hero-scene{overflow:clip;overflow-clip-margin:12px}.hero-copy{min-width:0}.hero h1{overflow-wrap:normal}@media(max-width:760px){.hero h1{font-size:clamp(42px,10.5vw,70px)}.hero-scene{overflow-clip-margin:0}.final-cta h2{font-size:36px}}
 .final-cta h2{font-size:54px;line-height:1.08;letter-spacing:-.05em}@media(max-width:760px){.final-cta h2{font-size:36px}}
+@media(max-width:760px){.week{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.day{padding:13px 3px}.day small{font-size:11px}.shift-name{font-size:11px;min-height:16px}.shift-time{font-size:10px}.date-number{font-size:22px}.artlist-visual{height:auto;aspect-ratio:16/9}}
