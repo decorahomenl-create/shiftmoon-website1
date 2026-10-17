@@ -1,0 +1,102 @@
+/* Sticky header with an always-visible install control, a 20-language
+   picker and one consistent iPhone frame for every real screenshot. */
+
+.site-header{position:sticky;top:0;z-index:40;background:#fbfafcf0;backdrop-filter:saturate(1.4) blur(18px);-webkit-backdrop-filter:saturate(1.4) blur(18px)}
+.header-inner{gap:22px}
+.brand-link{display:flex;flex-shrink:0}
+.nav-links{margin-left:auto}
+.nav-languages{display:none}
+
+/* Install control */
+.install-cta{position:relative;display:inline-flex;align-items:center;gap:10px;flex-shrink:0;height:48px;padding:0 16px 0 7px;border-radius:999px;color:#fff;text-decoration:none;
+  background:radial-gradient(120% 140% at 0% 0%,#9a74ff 0%,#6f45e6 45%,#2c1a5c 100%);
+  box-shadow:0 10px 26px #5b35c93d,inset 0 1px 0 #ffffff40,inset 0 0 0 1px #ffffff1f;transition:transform .2s ease,box-shadow .2s ease}
+.install-cta:before{content:'';position:absolute;inset:-3px;border-radius:inherit;background:conic-gradient(from 210deg,#b99bff00,#b99bff80,#ffd27a66,#b99bff00 60%);filter:blur(6px);opacity:.55;z-index:-1;animation:install-glow 6s linear infinite}
+.install-cta:hover{transform:translateY(-1px);box-shadow:0 14px 32px #5b35c955,inset 0 1px 0 #ffffff4d,inset 0 0 0 1px #ffffff2b}
+.install-cta:focus-visible{outline:3px solid #b99bff;outline-offset:3px}
+.install-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#ffffff1f;box-shadow:inset 0 0 0 1px #ffffff26;overflow:hidden;flex-shrink:0}
+.install-icon img{width:34px;height:34px;display:block;border-radius:10px}
+.install-text{display:flex;flex-direction:column;line-height:1.05;white-space:nowrap}
+.install-text small{font-size:10px;font-weight:600;letter-spacing:.04em;opacity:.78}
+.install-text strong{font-size:14px;font-weight:720;letter-spacing:-.01em;margin-top:2px}
+.install-apple{display:grid;place-items:center;width:18px;opacity:.95}
+.install-apple svg{width:15px;height:17px}
+.install-cta.is-soon .install-text strong:after{content:'';display:inline-block;width:6px;height:6px;margin-inline-start:7px;border-radius:50%;background:#ffd27a;box-shadow:0 0 0 3px #ffd27a33;vertical-align:middle;animation:install-pulse 2.4s ease-in-out infinite}
+@keyframes install-glow{to{transform:rotate(1turn)}}
+@keyframes install-pulse{50%{box-shadow:0 0 0 6px #ffd27a00}}
+@media (prefers-reduced-motion:reduce){.install-cta:before,.install-cta.is-soon .install-text strong:after{animation:none}}
+
+/* Language picker */
+.lang-menu{position:relative;flex-shrink:0}
+.lang-menu summary{list-style:none;display:flex;align-items:center;gap:6px;height:40px;padding:0 12px;border-radius:999px;border:1px solid var(--line);cursor:pointer;font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--ink);background:#fff9}
+.lang-menu summary::-webkit-details-marker{display:none}
+.lang-menu summary:after,.lang-menu summary:before{content:none!important;display:none!important}
+.lang-menu summary svg,.nav-languages svg{width:17px;height:17px}
+.lang-menu[open] summary{border-color:#b9a6ef;background:#fff}
+.lang-menu .lang-list{position:absolute;inset-inline-end:0;top:calc(100% + 10px);width:440px;max-height:min(70vh,520px);overflow:auto;margin:0;padding:10px;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:2px;background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 24px 60px #2b1b4e2e}
+.lang-list a{display:block;padding:10px 12px;border-radius:12px;font-size:14px;font-weight:550;color:var(--ink);text-decoration:none}
+.lang-list a:hover{background:#f2edff}
+.lang-list a[aria-current]{background:#eee6ff;color:#5b35c9;font-weight:700}
+
+/* Menu toggle as three lines */
+.menu-toggle{display:none;flex-direction:column;justify-content:center;align-items:center;gap:4px;flex-shrink:0;width:42px;height:42px;padding:0;border:1px solid var(--line);border-radius:50%;background:#fff9;color:var(--ink);cursor:pointer}
+.menu-toggle span{display:block;width:16px;height:2px;border-radius:2px;background:currentColor;transition:transform .2s,opacity .2s}
+.menu-toggle[aria-expanded=true] span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.menu-toggle[aria-expanded=true] span:nth-child(2){opacity:0}
+.menu-toggle[aria-expanded=true] span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+
+@media (max-width:1100px){
+  .nav-links{gap:16px}
+  .header-inner{gap:14px}
+}
+@media (max-width:980px){
+  .header-inner{height:72px;gap:10px}
+  .menu-toggle{display:flex}
+  .nav-links{display:none;position:absolute;top:72px;left:0;right:0;margin:0;padding:22px 24px 26px;background:#fbfafc;border-bottom:1px solid var(--line);box-shadow:0 30px 50px #2b1b4e1a;flex-direction:column;align-items:stretch;gap:4px;font-size:16px;max-height:calc(100vh - 72px);overflow:auto}
+  .nav-links.open{display:flex}
+  .nav-links>a{padding:12px 4px;border-bottom:1px solid #ece8f3}
+  .nav-languages{display:block;margin-top:14px}
+  .nav-languages>span{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .nav-languages .lang-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:2px}
+  .lang-menu{display:none}
+  .header-inner>.install-cta{margin-inline-start:auto}
+}
+@media (max-width:600px){
+  .container.header-inner{width:calc(100% - 28px)}
+  .header-inner{height:66px;gap:8px}
+  .nav-links{top:66px;max-height:calc(100vh - 66px)}
+  .brand{font-size:21px;gap:8px}
+  .brand img{width:32px;height:32px;border-radius:9px}
+  .install-cta{height:42px;padding:0 13px 0 5px;gap:8px}
+  .install-icon,.install-icon img{width:30px;height:30px;border-radius:9px}
+  .install-text small{font-size:9px}
+  .install-text strong{font-size:13px}
+  .install-apple{display:none}
+  .menu-toggle{width:40px;height:40px}
+}
+@media (max-width:420px){
+  .install-text small{display:none}
+}
+@media (max-width:374px){
+  .brand-name{display:none}
+}
+
+/* One iPhone frame for every real screenshot (iPhone 17: 402 × 874 pt).
+   The bezel is a fixed share of the phone, so every size keeps the same shape. */
+.device,.gallery-device,.chapter-phone{aspect-ratio:402/874;padding:0;border-radius:15.5%/7.15%;background:linear-gradient(150deg,#8d8a9b,#2b2a36 22%,#55526a 62%,#1f1e29);box-shadow:0 28px 60px #0004,0 0 0 1px #ffffff2e,inset 0 0 0 1px #00000080}
+.device .device-glass{position:absolute;inset:1.47% 3.2%;width:auto;height:auto;border-radius:13.7%/6.3%;background:#0e0f1a}
+.device .device-glass img{width:100%;height:100%;object-fit:cover;object-position:top}
+.device .device-glass:before{top:1.25%;height:4.2%;width:31.3%;border-radius:999px;background:#05050a}
+.device .device-glass:after{display:none}
+.rotation-inset img,.payday-inset img{display:block;width:100%;height:auto}
+.dialog-scroll img{border-radius:28px}
+
+/* Pages */
+.translation-note{font-size:14px;color:var(--muted);background:#f4f0fd;border-radius:14px;padding:12px 16px}
+.download-icon{display:block;width:96px;height:96px;border-radius:22px;box-shadow:0 14px 34px #5b35c933;margin-bottom:24px}
+
+/* Right-to-left languages */
+[dir=rtl] .benefit-mark,[dir=rtl] .text-action span{display:inline-block;transform:scaleX(-1)}
+[dir=rtl] .article-back{display:inline-block}
+[dir=rtl] .calendar-evidence .chapter-phone{transform:rotate(5deg)}
+[dir=rtl] .earnings-evidence .chapter-phone{transform:rotate(-5deg)}
