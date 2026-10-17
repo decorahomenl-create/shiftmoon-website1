@@ -100,3 +100,12 @@
 [dir=rtl] .article-back{display:inline-block}
 [dir=rtl] .calendar-evidence .chapter-phone{transform:rotate(5deg)}
 [dir=rtl] .earnings-evidence .chapter-phone{transform:rotate(-5deg)}
+
+/* Long words (German, Finnish, Dutch compounds) must wrap, not widen the page. */
+h1,h2,h3,.legal p,.support-card p,.lead{overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto}
+.legal h1{overflow-wrap:anywhere}
+.plans-grid>.offer{min-width:0}
+.offer h3{overflow-wrap:anywhere}
+@media (max-width:360px){.offer h3{font-size:31px}}
+.legal a.button{color:#fff;text-decoration:none}
+.download-page .actions{margin:28px 0}
