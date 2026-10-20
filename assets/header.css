@@ -109,3 +109,82 @@ h1,h2,h3,.legal p,.support-card p,.lead{overflow-wrap:break-word;hyphens:auto;-w
 @media (max-width:360px){.offer h3{font-size:31px}}
 .legal a.button{color:#fff;text-decoration:none}
 .download-page .actions{margin:28px 0}
+
+/* ===== Refinement pass 2026-10-20 ===== */
+
+/* Typography across 20 languages.
+   Display headings never hyphenate (a hyphen in 60px type reads as a mistake);
+   lines are balanced so a heading doesn't end on one stray word. A word that
+   still can't fit wraps rather than widening the page. */
+h1,h2,h3{hyphens:manual;-webkit-hyphens:manual;overflow-wrap:break-word;text-wrap:balance}
+p,li,summary,.chapter-lead,.hero-intro{text-wrap:pretty}
+.legal p,.support-card p,.lead{hyphens:auto;-webkit-hyphens:auto}
+/* Korean breaks between words, not inside them; Japanese between phrases. */
+:lang(ko){word-break:keep-all;overflow-wrap:break-word}
+:lang(ja) :is(h1,h2,h3,p,li,summary,span){word-break:auto-phrase;line-break:strict}
+/* Parts of a heading split by <br> (wrapped by site.js) balance independently. */
+h1 .hl,h2 .hl{display:block;text-wrap:balance}
+.product-hero h1 .hl{background:none;color:inherit;-webkit-background-clip:border-box;background-clip:border-box}
+/* Captions over the hero phones are short phrases: keep each on one line. */
+.proof-phone>span{white-space:nowrap;margin-inline:-48px}
+/* The earnings disclaimer sat flush against the page edge: .image-disclosure's
+   margin reset the container's auto margins. */
+.container.image-disclosure{margin-inline:auto;max-width:none}
+
+/* On tablets the FAQ heading got a narrow column and broke into four lines. */
+@media (max-width:1000px){.product-page .faq-layout{display:block}.product-page .faq-list{margin-top:30px}}
+
+/* Small affordances that answer a tap. */
+.button{transition:transform .2s,background .2s,box-shadow .2s}
+.button:active{transform:translateY(0) scale(.97)}
+.appearance button{transition:background .25s,color .25s,box-shadow .25s}
+summary:after{content:'+';transition:transform .3s cubic-bezier(.3,.7,.2,1)}
+details[open] summary:after{content:'+';transform:rotate(45deg)}
+.screen-tabs{position:relative}
+.screen-tabs .tab-indicator{position:absolute;bottom:-1px;left:0;height:2px;width:0;background:var(--purple);border-radius:2px;pointer-events:none}
+.screen-tabs.has-indicator>button[aria-selected=true]{border-color:transparent}
+
+@media (prefers-reduced-motion:no-preference){
+  :root{interpolate-size:allow-keywords}
+
+  /* Moonrise: the one orchestrated moment. The moon settles, the words
+     arrive in reading order, then the three phones rise and fan out. */
+  .product-hero .hero-art{animation:sm-moonrise 2.4s cubic-bezier(.2,.7,.1,1) both}
+  .hero-content>*{animation:sm-arrive .9s cubic-bezier(.2,.7,.2,1) both}
+  .hero-content>.eyebrow{animation-delay:.15s}
+  .hero-content>h1{animation-delay:.3s}
+  .hero-content>.hero-intro{animation-delay:.55s}
+  .hero-content>.hero-actions{animation-delay:.7s}
+  .hero-content>.hero-small{animation-delay:.82s}
+  .product-hero h1 span:not(.hl){background-size:220% 100%;background-image:linear-gradient(100deg,#f7f1ff 0%,#d2bfff 30%,#a784f6 45%,#fff 52%,#d2bfff 60%,#a784f6 100%);animation:sm-moonlight 2.2s .9s cubic-bezier(.4,0,.2,1) both}
+  .proof-phone{animation:sm-phone-rise 1.25s cubic-bezier(.16,.8,.2,1) both}
+  .proof-home{animation-delay:.75s}
+  .proof-calendar,.proof-salary{animation-delay:.95s}
+  .proof-phone>span{animation:sm-fade .8s 1.8s both}
+  .product-hero .real-caption{animation:sm-fade .8s 2s both}
+
+  /* Gallery: the screen you pick slides in from the side you moved toward. */
+  .screen-tabs .tab-indicator{transition:left .45s cubic-bezier(.3,.7,.2,1),width .45s cubic-bezier(.3,.7,.2,1)}
+  .screen-panels.is-switching .screen-panel:not([hidden]) .screen-story{animation:sm-story .55s cubic-bezier(.2,.7,.2,1) both}
+  .screen-panels.is-switching .screen-panel:not([hidden]) .gallery-device{animation:sm-device .6s cubic-bezier(.2,.7,.2,1) both}
+  .gallery-device .device-glass img{transition:opacity .22s ease}
+  .gallery-device.is-swapping .device-glass img{opacity:0}
+
+  /* Chapters: the inset screen is laid onto the phone as it comes into view. */
+  .js-reveal .calendar-circle{transform:scale(.82);opacity:0;transition:transform 1.2s cubic-bezier(.2,.7,.1,1),opacity 1.2s}
+  .js-reveal .rotation-inset,.js-reveal .payday-inset{opacity:0;translate:0 40px;rotate:-6deg;transition:opacity .7s .35s,translate .9s .35s cubic-bezier(.2,.8,.2,1),rotate .9s .35s cubic-bezier(.2,.8,.2,1)}
+  .js-reveal.is-in .calendar-circle{transform:none;opacity:1}
+  .js-reveal.is-in .rotation-inset,.js-reveal.is-in .payday-inset{opacity:1;translate:0 0;rotate:0deg}
+
+  /* FAQ answers open instead of appearing. */
+  .faq-list details::details-content{block-size:0;overflow:hidden;opacity:0;transition:block-size .4s cubic-bezier(.3,.7,.2,1),opacity .3s,content-visibility .4s allow-discrete}
+  .faq-list details[open]::details-content{block-size:auto;opacity:1}
+}
+
+@keyframes sm-moonrise{from{transform:translateY(7%) scale(1.08);opacity:0}}
+@keyframes sm-arrive{from{opacity:0;transform:translateY(22px)}}
+@keyframes sm-fade{from{opacity:0}}
+@keyframes sm-moonlight{from{background-position:100% 0}to{background-position:0 0}}
+@keyframes sm-phone-rise{from{opacity:0;transform:translateY(180px) rotate(0deg) scale(.94)}}
+@keyframes sm-story{from{opacity:0;transform:translateX(calc(var(--sm-dir,1) * 28px))}}
+@keyframes sm-device{from{opacity:0;transform:translateX(calc(var(--sm-dir,1) * 46px)) scale(.97)}}

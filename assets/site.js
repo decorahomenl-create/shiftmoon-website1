@@ -11,7 +11,37 @@ document.querySelectorAll('.nav-links a').forEach(link => link.addEventListener(
 
 // The gallery switches between captures of production SwiftUI views.
 const screenshotTabs = [...document.querySelectorAll('.screen-tabs [role="tab"]')];
+const screenPanels = document.querySelector('.screen-panels');
+const tabStrip = document.querySelector('.screen-tabs');
+const motionOK = matchMedia('(prefers-reduced-motion: no-preference)');
+let tabIndicator;
+if (tabStrip) {
+  tabIndicator = document.createElement('span');
+  tabIndicator.className = 'tab-indicator';
+  tabIndicator.setAttribute('aria-hidden', 'true');
+  tabStrip.append(tabIndicator);
+  tabStrip.classList.add('has-indicator');
+}
+function placeTabIndicator() {
+  const selected = tabStrip?.querySelector('[aria-selected="true"]');
+  if (!selected) return;
+  tabIndicator.style.left = `${selected.offsetLeft}px`;
+  tabIndicator.style.width = `${selected.offsetWidth}px`;
+}
+placeTabIndicator();
+addEventListener('resize', placeTabIndicator);
+document.fonts?.ready.then(placeTabIndicator);
 function selectScreenshot(tab, focus = false) {
+  const from = screenshotTabs.findIndex(item => item.getAttribute('aria-selected') === 'true');
+  const to = screenshotTabs.indexOf(tab);
+  if (screenPanels && from !== to) {
+    // Slide in from the side the reader moved toward (mirrored for RTL).
+    const rtl = document.documentElement.dir === 'rtl';
+    screenPanels.style.setProperty('--sm-dir', (to > from) !== rtl ? 1 : -1);
+    screenPanels.classList.remove('is-switching');
+    void screenPanels.offsetWidth;
+    screenPanels.classList.add('is-switching');
+  }
   screenshotTabs.forEach(item => {
     const selected = item === tab;
     item.setAttribute('aria-selected', String(selected));
@@ -19,6 +49,7 @@ function selectScreenshot(tab, focus = false) {
     document.getElementById(item.getAttribute('aria-controls')).hidden = !selected;
   });
   if (focus) tab.focus();
+  placeTabIndicator();
 }
 screenshotTabs.forEach((tab, index) => {
   tab.addEventListener('click', () => selectScreenshot(tab));
@@ -44,7 +75,20 @@ document.querySelectorAll('[data-appearance]').forEach(button => button.addEvent
   const display = panel.querySelector('.screen-display');
   const locale = document.documentElement.lang;
   const source = `/assets/screens/${display.dataset.screenshot}-${button.dataset.appearance}-${locale}.webp`;
-  display.querySelector('img').src = source;
+  const img = display.querySelector('img');
+  const device = display.querySelector('.gallery-device');
+  if (motionOK.matches && device && !img.src.endsWith(source)) {
+    // Fade the screen out, swap once the other appearance has loaded, fade back in.
+    device.classList.add('is-swapping');
+    const next = new Image();
+    next.onload = next.onerror = () => setTimeout(() => {
+      img.src = source;
+      requestAnimationFrame(() => device.classList.remove('is-swapping'));
+    }, 160);
+    next.src = source;
+  } else {
+    img.src = source;
+  }
   panel.querySelector('[data-zoom]').dataset.zoom = source;
   panel.querySelectorAll('[data-appearance]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
 }));
@@ -74,3 +118,41 @@ document.addEventListener('keydown', event => {
     menu.focus();
   }
 });
+
+// Chapter evidence: the inset screen settles onto the phone when it comes into view.
+const evidence = document.querySelectorAll('.calendar-evidence, .earnings-evidence');
+if (motionOK.matches && 'IntersectionObserver' in window && evidence.length) {
+  const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    entry.target.classList.add('is-in');
+    observer.unobserve(entry.target);
+  }), { threshold: 0.35 });
+  evidence.forEach(item => { item.classList.add('js-reveal'); observer.observe(item); });
+}
+
+// Headings with a hand-placed break: balance each part on its own, so
+// "A clearer working / month." becomes "A clearer / working month."
+document.querySelectorAll('main h1, main h2').forEach(heading => {
+  if (!heading.querySelector('br')) return;
+  const parts = [[]];
+  [...heading.childNodes].forEach(node => node.nodeName === 'BR' ? parts.push([]) : parts[parts.length - 1].push(node));
+  heading.replaceChildren(...parts.map(nodes => {
+    const line = document.createElement('span');
+    line.className = 'hl';
+    line.append(...nodes);
+    return line;
+  }));
+});
+
+// Polish, Ukrainian and Russian typography: a one-letter word (w, i, z, в, і, у…)
+// never ends a line; it stays with the word after it.
+if (/^(pl|uk|ru)$/.test(document.documentElement.lang)) {
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+    acceptNode: node => node.parentElement.closest('script,style,code,pre') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT
+  });
+  const oneLetter = /(^|[\s(«„"])([a-zA-Zа-яА-ЯіІїЇєЄґҐ])\s+(?=\S)/g;
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    if (oneLetter.test(node.data)) node.data = node.data.replace(oneLetter, '$1$2 ');
+    oneLetter.lastIndex = 0;
+  }
+}
