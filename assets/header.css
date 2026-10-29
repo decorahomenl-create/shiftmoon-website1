@@ -170,11 +170,6 @@ details[open] summary:after{content:'+';transform:rotate(45deg)}
   .gallery-device .device-glass img{transition:opacity .22s ease}
   .gallery-device.is-swapping .device-glass img{opacity:0}
 
-  /* Chapters: the inset screen is laid onto the phone as it comes into view. */
-  .js-reveal .calendar-circle{transform:scale(.82);opacity:0;transition:transform 1.2s cubic-bezier(.2,.7,.1,1),opacity 1.2s}
-  .js-reveal .rotation-inset,.js-reveal .payday-inset{opacity:0;translate:0 40px;rotate:-6deg;transition:opacity .7s .35s,translate .9s .35s cubic-bezier(.2,.8,.2,1),rotate .9s .35s cubic-bezier(.2,.8,.2,1)}
-  .js-reveal.is-in .calendar-circle{transform:none;opacity:1}
-  .js-reveal.is-in .rotation-inset,.js-reveal.is-in .payday-inset{opacity:1;translate:0 0;rotate:0deg}
 
   /* FAQ answers open instead of appearing. */
   .faq-list details::details-content{block-size:0;overflow:hidden;opacity:0;transition:block-size .4s cubic-bezier(.3,.7,.2,1),opacity .3s,content-visibility .4s allow-discrete}
@@ -188,3 +183,81 @@ details[open] summary:after{content:'+';transform:rotate(45deg)}
 @keyframes sm-phone-rise{from{opacity:0;transform:translateY(180px) rotate(0deg) scale(.94)}}
 @keyframes sm-story{from{opacity:0;transform:translateX(calc(var(--sm-dir,1) * 28px))}}
 @keyframes sm-device{from{opacity:0;transform:translateX(calc(var(--sm-dir,1) * 46px)) scale(.97)}}
+
+/* ===== Pricing and scroll motion, 2026-10-30 ===== */
+
+/* Pricing: Free stays the light everyday card; Premium is the night card,
+   with the yearly plan (the one with the trial) set apart. */
+.pricing{align-items:stretch}
+.pricing .offer>p{margin-bottom:0}
+.pricing .plan-price{margin:6px 0 10px;line-height:1}
+.pricing .plan-price strong{font-size:44px;font-weight:680;letter-spacing:-.05em}
+.plan-features{width:100%}
+.offer .plan-features li:before{content:none}
+.plan-features li{align-items:flex-start}
+.tick{flex:0 0 18px;height:18px;margin-top:2px;border-radius:50%;background:var(--purple) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M5 9.4l2.6 2.5L13 6.4' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/18px no-repeat}
+.pricing .premium-offer{background:radial-gradient(120% 80% at 100% 0,#3b2777 0,#1b1631 55%,#151225 100%);border-color:#3c3160;color:#fff;box-shadow:0 30px 70px #2a1a5a33}
+.pricing .premium-offer:before{color:#b99bff40}
+.pricing .premium-offer .offer-label{color:#c9b4ff}
+.pricing .premium-offer>p{color:#c3b9d8}
+.pricing .premium-offer .tick{background-color:#8f6bff}
+.pricing .premium-offer .plan-features{color:#e9e3f7}
+.pricing .premium-offer .button{background:#8058ef;color:#fff}
+.pricing .premium-offer .button:hover{background:#9168ff}
+.offer .price-options{list-style:none;padding:0;margin:24px 0 0;display:grid;gap:10px;width:100%;font-size:inherit}
+.offer .price-options+.plan-features{margin-top:28px}
+.offer .price-options li:before{content:none}
+.offer .price-option{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px 14px;padding:14px 18px;border-radius:18px;border:1px solid #ffffff1c;background:#ffffff08}
+.offer .price-option.is-best{border-color:#b99bffb3;background:linear-gradient(135deg,#8058ef40,#8058ef12);box-shadow:0 10px 30px #6e45e033}
+.po-name{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px;font-weight:600}
+.po-badge{font-size:10px;font-weight:700;line-height:1;padding:5px 8px;border-radius:100px;background:#ffd27a;color:#3b2a00}
+.po-price{display:flex;align-items:baseline;justify-content:flex-end;gap:6px;white-space:nowrap}
+.po-price strong{font-size:22px;font-weight:680;letter-spacing:-.03em}
+.po-price small{font-size:12px;color:#c3b9d8}
+.po-note{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:#d5c9f5}
+.po-trial{color:#9ff0c4;font-weight:600}
+@media(max-width:600px){.offer .price-option{padding:13px 15px}.po-price strong{font-size:20px}.pricing .plan-price strong{font-size:38px}}
+
+/* Scroll motion. site.js writes each tracked block's progress as
+   --in (0 as it enters at the bottom, 1 once it has risen into view),
+   --p (0 entering, 1 leaving) and, for the hero, --out (0 at rest, 1 when
+   scrolled past). Individual transform properties (translate/scale/rotate)
+   compose with each block's own transform, so the load animation and the
+   static tilts stay intact. Without JS every variable falls back to rest. */
+@media (prefers-reduced-motion:no-preference){
+  /* The planet sets as you scroll: it sinks, grows and turns. */
+  .product-hero .hero-art{translate:0 calc(var(--out,0) * 22%);scale:calc(1 + var(--out,0) * .18);rotate:calc(var(--out,0) * -9deg);transform-origin:70% 40%}
+  .product-hero .hero-content{translate:0 calc(var(--out,0) * -60px);opacity:calc(1 - var(--out,0) * 1.4)}
+  /* The three phones open up as you pass them. */
+  .product-hero .proof-calendar{translate:calc(var(--out,0) * -46px) calc(var(--out,0) * -30px)}
+  .product-hero .proof-salary{translate:calc(var(--out,0) * 46px) calc(var(--out,0) * -30px)}
+  .product-hero .proof-home{translate:0 calc(var(--out,0) * -70px)}
+
+  /* Chapter phones rise out of a tilt; the inset screen follows a beat later. */
+  .calendar-evidence,.earnings-evidence{perspective:1400px;--in2:max(0, calc((var(--in,1) - .35) / .65))}
+  .calendar-evidence .chapter-phone,.earnings-evidence .chapter-phone{translate:0 calc((1 - var(--in,1)) * 110px);rotate:x calc((1 - var(--in,1)) * 24deg);opacity:calc(.15 + var(--in,1) * .85)}
+  .calendar-evidence .calendar-circle{scale:calc(.7 + var(--in,1) * .3);opacity:var(--in,1)}
+  .rotation-inset{translate:calc((1 - var(--in2,1)) * 140px) calc((1 - var(--in2,1)) * 50px);opacity:var(--in2,1)}
+  .payday-inset{translate:calc((1 - var(--in2,1)) * -140px) calc((1 - var(--in2,1)) * 50px);opacity:var(--in2,1)}
+
+  /* The gallery phone lifts in once; tab switches keep their own motion. */
+  .screen-panels .gallery-device{translate:0 calc((1 - var(--in,1)) * 70px);scale:calc(.94 + var(--in,1) * .06)}
+
+  /* Widgets rise one after another. */
+  .widget-gallery .widget-tile{translate:0 calc((1 - var(--in,1)) * (70px + var(--i,0) * 45px));opacity:clamp(0, calc(var(--in,1) * 1.5 - var(--i,0) * .25), 1)}
+  .widget-gallery .widget-week{--i:1}
+  .widget-gallery .widget-month{--i:2}
+
+  /* Pricing settles in; the yearly plan arrives last and lands on top. */
+  .pricing .offer{translate:0 calc((1 - var(--in,1)) * 60px)}
+  .pricing .premium-offer{translate:0 calc((1 - var(--in,1)) * 100px)}
+
+  /* The closing planet drifts slower than the page. */
+  .last-call>img{translate:0 calc((var(--p,.5) - .5) * -26%);scale:1.18;rotate:calc((var(--p,.5) - .5) * 8deg)}
+}
+/* Narrow phones: the price drops under the plan name instead of squeezing
+   beside it ("pagamento único", "jednorazowo" did not fit at 320 px). */
+@media(max-width:400px){
+  .offer .price-option{grid-template-columns:1fr}
+  .po-price{justify-content:flex-start;flex-wrap:wrap}
+}

@@ -119,15 +119,31 @@ document.addEventListener('keydown', event => {
   }
 });
 
-// Chapter evidence: the inset screen settles onto the phone when it comes into view.
-const evidence = document.querySelectorAll('.calendar-evidence, .earnings-evidence');
-if (motionOK.matches && 'IntersectionObserver' in window && evidence.length) {
-  const observer = new IntersectionObserver(entries => entries.forEach(entry => {
-    if (!entry.isIntersecting) return;
-    entry.target.classList.add('is-in');
-    observer.unobserve(entry.target);
-  }), { threshold: 0.35 });
-  evidence.forEach(item => { item.classList.add('js-reveal'); observer.observe(item); });
+// Scroll motion: each tracked block gets its progress as CSS variables
+// (--in, --p, --out; see header.css). One rAF per scroll, transforms only.
+const scrollBlocks = [
+  ['.product-hero', 'out'],
+  ['.calendar-evidence', 'in'], ['.earnings-evidence', 'in'], ['.screen-panels', 'in'],
+  ['.widget-gallery', 'in'], ['.pricing', 'in'], ['.last-call', 'p'],
+].flatMap(([selector, kind]) => [...document.querySelectorAll(selector)].map(element => ({ element, kind })));
+if (motionOK.matches && scrollBlocks.length) {
+  const clamp = value => Math.min(1, Math.max(0, value));
+  let queued = false;
+  const update = () => {
+    queued = false;
+    const viewport = innerHeight;
+    for (const { element, kind } of scrollBlocks) {
+      const box = element.getBoundingClientRect();
+      if (box.bottom < -viewport || box.top > viewport * 2) continue;
+      if (kind === 'out') element.style.setProperty('--out', clamp(-box.top / Math.max(1, box.height * .9)).toFixed(4));
+      if (kind === 'in') element.style.setProperty('--in', clamp((viewport - box.top) / (viewport * .7)).toFixed(4));
+      if (kind === 'p') element.style.setProperty('--p', clamp((viewport - box.top) / (viewport + box.height)).toFixed(4));
+    }
+  };
+  const request = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
+  update();
+  addEventListener('scroll', request, { passive: true });
+  addEventListener('resize', request);
 }
 
 // Headings with a hand-placed break: balance each part on its own, so
